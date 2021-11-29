@@ -131,7 +131,7 @@ function takeScreenshot() {
 
 function cylindricalSegment(A, B) {
     let radius = randomIntFromInterval(0.001, 0.1);
-    radius = 0.1;
+    radius = 0.01;
     console.log(radius)
     //const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
     let material = new THREE.MeshStandardMaterial( {
