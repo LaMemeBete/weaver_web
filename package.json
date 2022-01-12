@@ -23,6 +23,8 @@
   "homepage": "https://github.com/Sean-Bradley/Threejs-Boilerplate#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "three": "^0.132.2"
+    "file-saver": "^2.0.5",
+    "three": "^0.132.2",
+    "three-obj-exporter": "0.0.1"
   }
 }

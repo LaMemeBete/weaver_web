@@ -69,8 +69,7 @@ const material = new THREE.MeshBasicMaterial({
     color: 0x00ff00,
     wireframe: true,
 })
-/*const cube = new THREE.Mesh(geometry, material)
-scene.add(cube)*/
+
 
 window.addEventListener(
     'resize',
@@ -96,9 +95,61 @@ function download(content, fileName, contentType) {
     download(JSON.stringify(scene.toJSON()), 'json.txt', 'text/plain');
 });*/
 
+/**
+ * Load boroughs
+ */
+let object;
+
+// manager
+
+function loadModel() {
+
+    object.traverse( function ( child ) {
+        if ( child.isMesh ) child.material.map = texture;
+
+    } );
+    object.position.y = - 95;
+    scene.add( object );
+
+}
+
+const manager = new THREE.LoadingManager(loadModel);
+
+manager.onProgress = function ( item, loaded, total ) {
+    console.log( item, loaded, total );
+};
+
+// texture
+
+const textureLoader = new THREE.TextureLoader( manager );
+const texture = textureLoader.load( './textures/uv_grid_opengl.jpeg' );
+
+// model
+
+function onProgress( xhr ) {
+
+    if ( xhr.lengthComputable ) {
+
+        const percentComplete = xhr.loaded / xhr.total * 100;
+        console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+
+    }
+
+}
+
+function onError() {}
+
+const loader = new OBJLoader( manager );
+loader.load( 'models/male02.obj', function ( obj ) {
+
+    object = obj;
+
+}, onProgress, onError );
 
 
-
+/**
+ * Socket imp
+ */
 let socket = new WebSocket("ws://localhost:8001/");
 
 socket.onopen = function(e) {
@@ -172,17 +223,6 @@ socket.onmessage = function(event) {
     
 };
 const stats = Stats()
-//document.body.appendChild(stats.dom)
-
-//const gui = new GUI()
-//const cubeFolder = gui.addFolder('Cube')
-/*cubeFolder.add(cube.scale, 'x', -5, 5)
-cubeFolder.add(cube.scale, 'y', -5, 5)
-cubeFolder.add(cube.scale, 'z', -5, 5)
-cubeFolder.open()*/
-//const cameraFolder = gui.addFolder('Camera')
-//cameraFolder.add(camera.position, 'z', 0, 10)
-//cameraFolder.open()
 
 function animate() {
     requestAnimationFrame(animate)
@@ -222,25 +262,9 @@ document.body.appendChild( link )
 
 
 document.getElementById( 'export_scene' ).addEventListener( 'click', function () {
-    /*const exporter = new GLTFExporter();
-    // Parse the input and generate the glTF output
-    exporter.parse(
-        scene,
-        // called when the gltf has been generated
-        function ( gltf ) {
-            console.log( gltf );
-            downloadJSON( gltf, 'test');
-        },
-        // called when there is an error in the generation
-        function ( error ) {
-            console.log( 'An error happened' );
-        }
-    );*/
     const exporter = new STLExporter();
     const result = exporter.parse( scene );
     console.log(result)
-    
-    //downloadJSON( result, 'test.stl');
 	saveString( result, 'box.stl' );
 } );
 
